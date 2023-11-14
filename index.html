@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* стилі залишаються незмінними */
         body {
             display: flex;
             align-items: center;
@@ -51,6 +52,7 @@
         const scoreElement = document.getElementById("score-value");
         const difficultySelect = document.getElementById("difficulty");
         const context = canvas.getContext("2d");
+        let foodEaten = false;
 
         const tileSize = 30;
         canvas.width = 600;
@@ -61,8 +63,9 @@
         let score = 1;
         let difficultyInterval = Infinity;
         let foodTimeout;
+        let foodColor;
 
-        generateFood()
+        generateFood();
 
         function draw() {
             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -87,7 +90,7 @@
         }
 
         function drawFood() {
-            context.fillStyle = "#F00";
+            context.fillStyle = foodColor;
             food.forEach((foodBlock) => {
                 context.fillRect(foodBlock.x * tileSize, foodBlock.y * tileSize, tileSize, tileSize);
             });
@@ -134,10 +137,17 @@
                     snake.push({});
                     food.splice(index, 1);
                     score++;
-                    generateFood();
+                    foodEaten = true;
                 }
             });
+
+            if (foodEaten) {
+                generateFood();
+                foodColor = getRandomColor();
+            }
+            foodEaten = false;
         }
+
         function generateFood() {
             const newFood = {
                 x: Math.floor(Math.random() * (canvas.width / tileSize)),
@@ -146,6 +156,15 @@
 
             food.push(newFood);
             drawFood();
+        }
+
+        function getRandomColor() {
+            const letters = "0123456789ABCDEF";
+            let color = "#";
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
         }
 
         function changeDifficulty() {
